@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>容积计算</title>
+    <style>
+        /* 
+         * Version: 1.0.1
+         * Last Update: 2024-03-xx
+         * Important: 这是一个稳定的样式版本，所有计算工具页面都应该使用这个版本的样式
+         */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;  /* 标准背景色 */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .back-link {
+            display: inline-block;
+            margin: 20px 0;
+            color: white;
+            text-decoration: none;
+            align-self: flex-start;
+            margin-left: 20px;
+            background-color: #34495e;
+            padding: 10px 20px;
+            border-radius: 4px;
+        }
+        .back-link:hover {
+            background-color: #2c3e50;
+        }
+        .calculator-container {
+            max-width: 1000px;
+            width: 95%;
+            margin: 0 auto 20px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-decoration: underline;
+        }
+        .calc-layout {
+            display: flex;
+            gap: 15px;
+        }
+        .input-section {
+            flex: 1;
+            padding-right: 10px;
+            border-right: 1px solid #eee;
+            font-size: 14px;
+        }
+        .results-section {
+            flex: 1;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 5px;
+            font-size: 14px;
+        }
+        label {
+            width: 150px;
+            text-align: right;
+            font-size: 14px;
+        }
+        input {
+            width: 120px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        select {
+            width: 120px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .results h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-decoration: underline;
+            font-size: 16px;
+        }
+        .result-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: white;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: block;
+            width: 100%;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .shape-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .density-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .shape-image {
+            width: 200px;
+            height: auto;
+            margin: 10px 0;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← 返回主页</a>
+    <div class="calculator-container">
+        <h2>容积计算</h2>
+        
+        <div class="calc-layout">
+            <div class="input-section">
+                <!-- 长方体计算 -->
+                <div class="shape-section">
+                    <h3>长方体</h3>
+                    <div class="input-group">
+                        <label for="box-density">比重:</label>
+                        <input type="number" id="box-density" value="1" placeholder="输入比重">
+                        <select onchange="this.previousElementSibling.value=this.value">
+                            <option value="1.0">水 (1.0)</option>
+                            <option value="7.85">碳钢 (7.85)</option>
+                            <option value="7.93">不锈钢 (7.93)</option>
+                            <option value="2.7">铝 (2.7)</option>
+                            <option value="8.94">铜 (8.94)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="box-length">长度 (mm):</label>
+                        <input type="number" id="box-length" placeholder="输入长度">
+                    </div>
+                    <div class="input-group">
+                        <label for="box-width">宽度 (mm):</label>
+                        <input type="number" id="box-width" placeholder="输入宽度">
+                    </div>
+                    <div class="input-group">
+                        <label for="box-height">高度 (mm):</label>
+                        <input type="number" id="box-height" placeholder="输入高度">
+                    </div>
+                    <button onclick="calculateBox()">计算</button>
+                    <div class="result-item" id="box-result"></div>
+                </div>
+
+                <!-- 球体计算 -->
+                <div class="shape-section">
+                    <h3>球体</h3>
+                    <div class="input-group">
+                        <label for="sphere-density">比重:</label>
+                        <input type="number" id="sphere-density" value="1" placeholder="输入比重">
+                        <select onchange="this.previousElementSibling.value=this.value">
+                            <option value="1.0">水 (1.0)</option>
+                            <option value="7.85">碳钢 (7.85)</option>
+                            <option value="7.93">不锈钢 (7.93)</option>
+                            <option value="2.7">铝 (2.7)</option>
+                            <option value="8.94">铜 (8.94)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="sphere-radius">半径 (mm):</label>
+                        <input type="number" id="sphere-radius" placeholder="输入半径">
+                    </div>
+                    <button onclick="calculateSphere()">计算</button>
+                    <div class="result-item" id="sphere-result"></div>
+                </div>
+
+                <!-- 圆柱体计算 -->
+                <div class="shape-section">
+                    <h3>圆柱体</h3>
+                    <div class="input-group">
+                        <label for="cylinder-density">比重:</label>
+                        <input type="number" id="cylinder-density" value="1" placeholder="输入比重">
+                        <select onchange="this.previousElementSibling.value=this.value">
+                            <option value="1.0">水 (1.0)</option>
+                            <option value="7.85">碳钢 (7.85)</option>
+                            <option value="7.93">不锈钢 (7.93)</option>
+                            <option value="2.7">铝 (2.7)</option>
+                            <option value="8.94">铜 (8.94)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="cylinder-radius">半径 (mm):</label>
+                        <input type="number" id="cylinder-radius" placeholder="输入半径">
+                    </div>
+                    <div class="input-group">
+                        <label for="cylinder-height">高度 (mm):</label>
+                        <input type="number" id="cylinder-height" placeholder="输入高度">
+                    </div>
+                    <button onclick="calculateCylinder()">计算</button>
+                    <div class="result-item" id="cylinder-result"></div>
+                </div>
+
+                <!-- 套筒体计算 -->
+                <div class="shape-section">
+                    <h3>套筒体</h3>
+                    <div class="input-group">
+                        <label for="tube-density">比重:</label>
+                        <input type="number" id="tube-density" value="1" placeholder="输入比重">
+                        <select onchange="this.previousElementSibling.value=this.value">
+                            <option value="1.0">水 (1.0)</option>
+                            <option value="7.85">碳钢 (7.85)</option>
+                            <option value="7.93">不锈钢 (7.93)</option>
+                            <option value="2.7">铝 (2.7)</option>
+                            <option value="8.94">铜 (8.94)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="tube-outer-radius">外半径 (mm):</label>
+                        <input type="number" id="tube-outer-radius" placeholder="输入外半径">
+                    </div>
+                    <div class="input-group">
+                        <label for="tube-inner-radius">内半径 (mm):</label>
+                        <input type="number" id="tube-inner-radius" placeholder="输入内半径">
+                    </div>
+                    <div class="input-group">
+                        <label for="tube-height">高度 (mm):</label>
+                        <input type="number" id="tube-height" placeholder="输入高度">
+                    </div>
+                    <button onclick="calculateTube()">计算</button>
+                    <div class="result-item" id="tube-result"></div>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="results">
+                    <h3>计算说明</h3>
+                    <div class="result-item">
+                        <strong>计算公式:</strong>
+                        <ul>
+                            <li>长方体体积 = 长 × 宽 × 高</li>
+                            <li>球体体积 = 4/3 × π × r³</li>
+                            <li>圆柱体体积 = π × r² × h</li>
+                            <li>套筒体体积 = π × h × (R² - r²)</li>
+                            <li>重量 = 体积 × 比重</li>
+                        </ul>
+                    </div>
+                    <div class="result-item">
+                        <strong>注意事项:</strong>
+                        <ul>
+                            <li>所有输入单位均为毫米(mm)</li>
+                            <li>体积结果单位为升(L)</li>
+                            <li>重量结果单位为千克(kg)</li>
+                            <li>比重为相对于水的密度比</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateBox() {
+            const length = parseFloat(document.getElementById('box-length').value) / 1000; // mm转m
+            const width = parseFloat(document.getElementById('box-width').value) / 1000;
+            const height = parseFloat(document.getElementById('box-height').value) / 1000;
+            const density = parseFloat(document.getElementById('box-density').value);
+            
+            if (length && width && height) {
+                const volume = length * width * height;
+                const volumeL = volume * 1000; // 转换为升
+                const weight = volume * density * 1000; // 转换为kg
+                document.getElementById('box-result').textContent = 
+                    `体积: ${volumeL.toFixed(2)} L\n重量: ${weight.toFixed(2)} kg`;
+            }
+        }
+
+        function calculateSphere() {
+            const radius = parseFloat(document.getElementById('sphere-radius').value) / 1000; // mm转m
+            const density = parseFloat(document.getElementById('sphere-density').value);
+            
+            if (radius) {
+                const volume = (4/3) * Math.PI * Math.pow(radius, 3);
+                const volumeL = volume * 1000; // 转换为升
+                const weight = volume * density * 1000; // 转换为kg
+                document.getElementById('sphere-result').textContent = 
+                    `体积: ${volumeL.toFixed(2)} L\n重量: ${weight.toFixed(2)} kg`;
+            }
+        }
+
+        function calculateCylinder() {
+            const radius = parseFloat(document.getElementById('cylinder-radius').value) / 1000; // mm转m
+            const height = parseFloat(document.getElementById('cylinder-height').value) / 1000;
+            const density = parseFloat(document.getElementById('cylinder-density').value);
+            
+            if (radius && height) {
+                const volume = Math.PI * Math.pow(radius, 2) * height;
+                const volumeL = volume * 1000; // 转换为升
+                const weight = volume * density * 1000; // 转换为kg
+                document.getElementById('cylinder-result').textContent = 
+                    `体积: ${volumeL.toFixed(2)} L\n重量: ${weight.toFixed(2)} kg`;
+            }
+        }
+
+        function calculateTube() {
+            const outerRadius = parseFloat(document.getElementById('tube-outer-radius').value) / 1000; // mm转m
+            const innerRadius = parseFloat(document.getElementById('tube-inner-radius').value) / 1000;
+            const height = parseFloat(document.getElementById('tube-height').value) / 1000;
+            const density = parseFloat(document.getElementById('tube-density').value);
+            
+            if (outerRadius && innerRadius && height && outerRadius > innerRadius) {
+                const volume = Math.PI * height * (Math.pow(outerRadius, 2) - Math.pow(innerRadius, 2));
+                const volumeL = volume * 1000; // 转换为升
+                const weight = volume * density * 1000; // 转换为kg
+                document.getElementById('tube-result').textContent = 
+                    `体积: ${volumeL.toFixed(2)} L\n重量: ${weight.toFixed(2)} kg`;
+            }
+        }
+    </script>
+</body>
+</html> 

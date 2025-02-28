@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>粘度换算</title>
+    <style>
+        /* 
+         * Version: 1.0.1
+         * Last Update: 2024-03-xx
+         * Important: 这是一个稳定的样式版本，所有计算工具页面都应该使用这个版本的样式
+         */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;  /* 标准背景色 */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .back-link {
+            display: inline-block;
+            margin: 20px 0;
+            color: white;
+            text-decoration: none;
+            align-self: flex-start;
+            margin-left: 20px;
+            background-color: #34495e;
+            padding: 10px 20px;
+            border-radius: 4px;
+        }
+        .back-link:hover {
+            background-color: #2c3e50;
+        }
+        .calculator-container {
+            max-width: 1000px;
+            width: 95%;
+            margin: 0 auto 20px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-decoration: underline;
+        }
+        .calc-layout {
+            display: flex;
+            gap: 15px;
+        }
+        .input-section {
+            flex: 1;
+            padding-right: 10px;
+            border-right: 1px solid #eee;
+            font-size: 14px;
+        }
+        .results-section {
+            flex: 1;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 5px;
+            font-size: 14px;
+        }
+        label {
+            width: 150px;
+            text-align: right;
+            font-size: 14px;
+        }
+        input {
+            width: 120px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        select {
+            width: 120px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .results h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-decoration: underline;
+            font-size: 16px;
+        }
+        .result-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: white;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: block;
+            width: 100%;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .converter-type {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← 返回主页</a>
+    <div class="calculator-container">
+        <h2>粘度换算</h2>
+        
+        <div class="calc-layout">
+            <div class="input-section">
+                <!-- 动力粘度换算 -->
+                <div class="converter-type">
+                    <h3>动力粘度换算</h3>
+                    <div class="input-group">
+                        <label for="dynamic-input">输入值:</label>
+                        <input type="number" id="dynamic-input" placeholder="输入数值">
+                    </div>
+                    <div class="input-group">
+                        <label for="dynamic-from">从:</label>
+                        <select id="dynamic-from">
+                            <option value="pa_s">帕斯卡秒(Pa·s)</option>
+                            <option value="poise">泊(P)</option>
+                            <option value="centipoise">厘泊(cP)</option>
+                            <option value="kg_ms">千克每米秒(kg/m·s)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="dynamic-to">转换到:</label>
+                        <select id="dynamic-to">
+                            <option value="pa_s">帕斯卡秒(Pa·s)</option>
+                            <option value="poise">泊(P)</option>
+                            <option value="centipoise">厘泊(cP)</option>
+                            <option value="kg_ms">千克每米秒(kg/m·s)</option>
+                        </select>
+                    </div>
+                    <button onclick="convertDynamicViscosity()">计算</button>
+                    <div class="result-item" id="dynamic-result"></div>
+                </div>
+
+                <!-- 运动粘度换算 -->
+                <div class="converter-type">
+                    <h3>运动粘度换算</h3>
+                    <div class="input-group">
+                        <label for="kinematic-input">输入值:</label>
+                        <input type="number" id="kinematic-input" placeholder="输入数值">
+                    </div>
+                    <div class="input-group">
+                        <label for="kinematic-from">从:</label>
+                        <select id="kinematic-from">
+                            <option value="m2_s">平方米每秒(m²/s)</option>
+                            <option value="stokes">斯托克斯(St)</option>
+                            <option value="centistokes">厘斯托克斯(cSt)</option>
+                            <option value="mm2_s">平方毫米每秒(mm²/s)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="kinematic-to">转换到:</label>
+                        <select id="kinematic-to">
+                            <option value="m2_s">平方米每秒(m²/s)</option>
+                            <option value="stokes">斯托克斯(St)</option>
+                            <option value="centistokes">厘斯托克斯(cSt)</option>
+                            <option value="mm2_s">平方毫米每秒(mm²/s)</option>
+                        </select>
+                    </div>
+                    <button onclick="convertKinematicViscosity()">计算</button>
+                    <div class="result-item" id="kinematic-result"></div>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="results">
+                    <h3>粘度单位说明</h3>
+                    <div class="result-item">
+                        <strong>动力粘度单位:</strong>
+                        <ul>
+                            <li>帕斯卡秒(Pa·s): SI基本单位</li>
+                            <li>泊(P): 1 P = 0.1 Pa·s</li>
+                            <li>厘泊(cP): 1 cP = 0.001 Pa·s</li>
+                            <li>千克每米秒(kg/m·s): 等同于Pa·s</li>
+                        </ul>
+                    </div>
+                    <div class="result-item">
+                        <strong>运动粘度单位:</strong>
+                        <ul>
+                            <li>平方米每秒(m²/s): SI基本单位</li>
+                            <li>斯托克斯(St): 1 St = 10⁻⁴ m²/s</li>
+                            <li>厘斯托克斯(cSt): 1 cSt = 10⁻⁶ m²/s</li>
+                            <li>平方毫米每秒(mm²/s): 等同于cSt</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 动力粘度换算系数（以Pa·s为基准）
+        const dynamicFactors = {
+            pa_s: 1,
+            poise: 10,
+            centipoise: 1000,
+            kg_ms: 1
+        };
+
+        // 运动粘度换算系数（以m²/s为基准）
+        const kinematicFactors = {
+            m2_s: 1,
+            stokes: 10000,
+            centistokes: 1000000,
+            mm2_s: 1000000
+        };
+
+        function convert(value, fromUnit, toUnit, factors) {
+            const baseValue = value / factors[fromUnit];
+            return baseValue * factors[toUnit];
+        }
+
+        function convertDynamicViscosity() {
+            const value = parseFloat(document.getElementById('dynamic-input').value);
+            const fromUnit = document.getElementById('dynamic-from').value;
+            const toUnit = document.getElementById('dynamic-to').value;
+            const result = convert(value, fromUnit, toUnit, dynamicFactors);
+            document.getElementById('dynamic-result').textContent = 
+                `${value} ${fromUnit} = ${result.toExponential(4)} ${toUnit}`;
+        }
+
+        function convertKinematicViscosity() {
+            const value = parseFloat(document.getElementById('kinematic-input').value);
+            const fromUnit = document.getElementById('kinematic-from').value;
+            const toUnit = document.getElementById('kinematic-to').value;
+            const result = convert(value, fromUnit, toUnit, kinematicFactors);
+            document.getElementById('kinematic-result').textContent = 
+                `${value} ${fromUnit} = ${result.toExponential(4)} ${toUnit}`;
+        }
+    </script>
+</body>
+</html> 

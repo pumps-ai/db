@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>技术手册 - 离心泵工程师工具箱</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-size: 14px;
+        }
+
+        .manual-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .upload-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .upload-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .upload-button:hover {
+            background: var(--secondary-color);
+        }
+
+        .file-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .file-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .file-meta {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .file-action-button {
+            padding: 5px 10px;
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            background: white;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .file-action-button:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .category-tab {
+            padding: 8px 15px;
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .category-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <!-- 复用sidebar -->
+            <div class="sidebar-category">
+                <h3>计算工具</h3>
+                <ul>
+                    <li><a href="optimization.html">优化计算</a></li>
+                    <li><a href="balance.html">叶轮平衡</a></li>
+                    <li><a href="unit-converter.html">单位换算</a></li>
+                    <li><a href="pipe-loss.html">管道损失</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-category">
+                <h3>技术资料</h3>
+                <ul>
+                    <li><a href="manual.html" class="active">技术手册</a></li>
+                    <li><a href="cases.html">应用案例</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="page-header">
+                <h1>技术手册</h1>
+                <a href="index.html" class="back-link">返回首页</a>
+            </div>
+
+            <div class="manual-container">
+                <!-- 文件分类标签 -->
+                <div class="category-tabs">
+                    <button class="category-tab active" data-category="all">全部</button>
+                    <button class="category-tab" data-category="design">设计手册</button>
+                    <button class="category-tab" data-category="standard">标准规范</button>
+                    <button class="category-tab" data-category="operation">操作指南</button>
+                </div>
+
+                <!-- 文件列表 -->
+                <ul class="file-list" id="file-list">
+                    <!-- 示例文件 -->
+                    <li class="file-item">
+                        <img src="pdf-icon.png" alt="PDF" class="file-icon">
+                        <div class="file-info">
+                            <div class="file-name">离心泵设计手册2024版.pdf</div>
+                            <div class="file-meta">
+                                <span>更新时间：2024-03-20</span>
+                                <span>大小：2.5MB</span>
+                            </div>
+                        </div>
+                        <div class="file-actions">
+                            <button class="file-action-button" onclick="openFile('离心泵设计手册2024版.pdf')">打开</button>
+                        </div>
+                    </li>
+                    <!-- 添加更多预设文件 -->
+                    <li class="file-item">
+                        <img src="pdf-icon.png" alt="PDF" class="file-icon">
+                        <div class="file-info">
+                            <div class="file-name">离心泵国家标准汇编.pdf</div>
+                            <div class="file-meta">
+                                <span>更新时间：2024-03-15</span>
+                                <span>大小：5.8MB</span>
+                            </div>
+                        </div>
+                        <div class="file-actions">
+                            <button class="file-action-button" onclick="openFile('离心泵国家标准汇编.pdf')">打开</button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 打开文件
+        function openFile(fileName) {
+            // 这里需要后端支持，目前只是示例
+            console.log('Opening file:', fileName);
+            // window.open(`/files/${fileName}`);
+        }
+
+        // 分类标签切换
+        const categoryTabs = document.querySelectorAll('.category-tab');
+        categoryTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                categoryTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                filterFiles(tab.dataset.category);
+            });
+        });
+
+        // 文件筛选
+        function filterFiles(category) {
+            // 这里需要实现文件筛选逻辑
+            console.log('Filtering files by category:', category);
+        }
+    </script>
+</body>
+</html> 

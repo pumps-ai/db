@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Standards Reference</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .back-link {
+            display: inline-block;
+            margin: 20px 0;
+            color: white;
+            text-decoration: none;
+            align-self: flex-start;
+            margin-left: 20px;
+            background-color: #34495e;
+            padding: 10px 20px;
+            border-radius: 4px;
+        }
+        .back-link:hover {
+            background-color: #2c3e50;
+        }
+        .standards-container {
+            max-width: 1200px;
+            width: 95%;
+            margin: 0 auto 20px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-decoration: underline;
+        }
+        .standard-section {
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+        .standard-section h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .section-content {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .subsection {
+            margin-bottom: 20px;
+        }
+        .subsection h4 {
+            color: #34495e;
+            margin-bottom: 10px;
+        }
+        .code-reference {
+            font-family: monospace;
+            background-color: #f1f1f1;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← Return to Home</a>
+    <div class="standards-container">
+        <h2>API Standards Reference</h2>
+
+        <!-- API 610 Section -->
+        <div class="standard-section">
+            <h3>API 610 - Centrifugal Pumps for Petroleum, Petrochemical and Natural Gas Industries</h3>
+            
+            <div class="section-content">
+                <div class="subsection">
+                    <h4>1. Scope</h4>
+                    <ul>
+                        <li>Specifies requirements for centrifugal pumps in petroleum, petrochemical, and gas industry services</li>
+                        <li>Applicable to overhung, between bearings, and vertically suspended pumps</li>
+                        <li>Covers pump design, materials, inspection, testing, and preparation for shipment</li>
+                    </ul>
+                </div>
+
+                <div class="subsection">
+                    <h4>2. Pump Designations</h4>
+                    <ul>
+                        <li><span class="code-reference">OH1</span> - Overhung, centerline mounted</li>
+                        <li><span class="code-reference">OH2</span> - Overhung, centerline mounted, heavy duty</li>
+                        <li><span class="code-reference">BB1</span> - Between bearings, axially split</li>
+                        <li><span class="code-reference">BB2</span> - Between bearings, radially split</li>
+                        <li><span class="code-reference">VS1</span> - Vertically suspended, single casing</li>
+                        <li><span class="code-reference">VS6</span> - Vertically suspended, can type</li>
+                    </ul>
+                </div>
+
+                <div class="subsection">
+                    <h4>3. Key Requirements</h4>
+                    <ul>
+                        <li>Operating Temperature Range: -73°C to 425°C (-100°F to 800°F)</li>
+                        <li>Minimum Design Pressure: 40 bar (580 psi)</li>
+                        <li>NPSH margin: Minimum 10% or 1m (3ft), whichever is greater</li>
+                        <li>Bearing Life: Minimum L10h of 25,000 hours</li>
+                        <li>Shaft Deflection: Maximum 0.05mm (0.002in) at seal chamber</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- API 682 Section -->
+        <div class="standard-section">
+            <h3>API 682 - Shaft Sealing Systems for Centrifugal and Rotary Pumps</h3>
+            
+            <div class="section-content">
+                <div class="subsection">
+                    <h4>1. Seal Categories</h4>
+                    <ul>
+                        <li><span class="code-reference">Category 1</span> - Non-cartridge, elastomer bellows, pusher</li>
+                        <li><span class="code-reference">Category 2</span> - Cartridge, balanced, standardized</li>
+                        <li><span class="code-reference">Category 3</span> - Cartridge, high-performance, engineered</li>
+                    </ul>
+                </div>
+
+                <div class="subsection">
+                    <h4>2. Seal Types</h4>
+                    <ul>
+                        <li><span class="code-reference">Type A</span> - Pusher seal, dynamic O-ring</li>
+                        <li><span class="code-reference">Type B</span> - Metal bellows seal</li>
+                        <li><span class="code-reference">Type C</span> - High temperature metal bellows seal</li>
+                    </ul>
+                </div>
+
+                <div class="subsection">
+                    <h4>3. Seal Arrangements</h4>
+                    <ul>
+                        <li><span class="code-reference">Arrangement 1</span> - Single seal</li>
+                        <li><span class="code-reference">Arrangement 2</span> - Dual unpressurized seal</li>
+                        <li><span class="code-reference">Arrangement 3</span> - Dual pressurized seal</li>
+                    </ul>
+                </div>
+
+                <div class="subsection">
+                    <h4>4. Piping Plans</h4>
+                    <ul>
+                        <li><span class="code-reference">Plan 11</span> - Seal chamber recirculation</li>
+                        <li><span class="code-reference">Plan 21</span> - Cooled seal chamber recirculation</li>
+                        <li><span class="code-reference">Plan 23</span> - Cooled seal chamber recirculation with barrier/buffer fluid</li>
+                        <li><span class="code-reference">Plan 52</span> - Unpressurized dual seal buffer system</li>
+                        <li><span class="code-reference">Plan 53A/B/C</span> - Pressurized dual seal barrier system</li>
+                        <li><span class="code-reference">Plan 54</span> - Pressurized external barrier fluid system</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

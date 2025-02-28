@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>叶轮平衡计算</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-category">
+            <h3>计算工具</h3>
+            <ul>
+                <li><a href="optimization.html">优化计算</a></li>
+                <li><a href="balance.html">叶轮平衡</a></li>
+                <li><a href="unit-converter.html">单位换算</a></li>
+                <li><a href="pipe-loss.html">管道损失</a></li>
+                <li><a href="stress-relief.html">应力消除</a></li>
+                <li><a href="vibration-analysis.html">振动分析</a></li>
+            </ul>
+        </div>
+        
+        <div class="sidebar-category">
+            <h3>技术资料</h3>
+            <ul>
+                <li><a href="manual.html">技术手册</a></li>
+                <li><a href="cases.html">应用案例</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-category">
+            <h3>用户中心</h3>
+            <ul>
+                <li><a href="#" class="user-management">长期用户管理</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="calculator-container">
+            <div class="page-header">
+                <h2>叶轮平衡计算</h2>
+                <a href="index.html" class="back-link">返回首页</a>
+            </div>
+            
+            <div class="calc-layout">
+                <div class="input-section">
+                    <div class="input-group">
+                        <label>转子重量 (kg)</label>
+                        <input type="number" id="rotor_weight" value="22">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>转速 (RPM)</label>
+                        <input type="number" id="speed" value="2975">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>转子半径 (mm)</label>
+                        <input type="number" id="rotor_radius" value="150">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>平衡等级</label>
+                        <select id="grade">
+                            <option value="6.3">G6.3</option>
+                            <option value="4.0">G4.0</option>
+                            <option value="2.5" selected>G2.5</option>
+                            <option value="1.0">G1.0</option>
+                        </select>
+                    </div>
+
+                    <button onclick="calculate()">计算</button>
+                </div>
+
+                <div class="results-section">
+                    <h3>计算结果</h3>
+                    <div class="result-item" id="e_result">e (um): </div>
+                    <div class="result-item" id="k1_result">K1 (g): </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const rotor_weight = parseFloat(document.getElementById('rotor_weight').value);
+            const speed = parseFloat(document.getElementById('speed').value);
+            const rotor_radius = parseFloat(document.getElementById('rotor_radius').value);
+            const grade = parseFloat(document.getElementById('grade').value);
+
+            const omega = 2 * Math.PI * speed / 60;
+            const e = grade * 1000 / omega;
+            const k1 = (e * rotor_weight) / rotor_radius;
+            
+            document.getElementById('e_result').textContent = `e (um): ${e.toFixed(2)}`;
+            document.getElementById('k1_result').textContent = `K1 (g): ${k1.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html> 

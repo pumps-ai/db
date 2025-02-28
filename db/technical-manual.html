@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>离心泵技术手册</title>
+    <style>
+        /* 复用基础样式 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .back-link {
+            display: inline-block;
+            margin: 20px 0;
+            color: white;
+            text-decoration: none;
+            align-self: flex-start;
+            margin-left: 20px;
+            background-color: #34495e;
+            padding: 10px 20px;
+            border-radius: 4px;
+        }
+        .back-link:hover {
+            background-color: #2c3e50;
+        }
+        .manual-container {
+            max-width: 1200px;
+            width: 95%;
+            margin: 0 auto 20px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-decoration: underline;
+        }
+        .manual-section {
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+        .manual-section h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .section-content {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .subsection {
+            margin-bottom: 20px;
+        }
+        .subsection h4 {
+            color: #34495e;
+            margin-bottom: 10px;
+        }
+        .formula {
+            font-family: monospace;
+            background-color: #f1f1f1;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        ul, ol {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← 返回主页</a>
+    <div class="manual-container">
+        <h2>离心泵技术手册</h2>
+
+        <!-- Pump Selection Section -->
+        <div class="manual-section">
+            <h3>1. 泵的选型指南</h3>
+            <div class="section-content">
+                <div class="subsection">
+                    <h4>1.1 性能参数</h4>
+                    <ul>
+                        <li>流量 (Q): m³/h</li>
+                        <li>扬程 (H): m</li>
+                        <li>汽蚀余量要求</li>
+                        <li>效率 (η)</li>
+                        <li>功率消耗 (P)</li>
+                    </ul>
+                    <div class="formula">
+                        功率 (kW) = 流量 (m³/s) × 扬程 (m) × 密度 (kg/m³) × 重力加速度 (m/s²) / (效率 × 1000)
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h4>1.2 运行条件</h4>
+                    <ul>
+                        <li>流体特性
+                            <ul>
+                                <li>温度范围</li>
+                                <li>比重</li>
+                                <li>粘度</li>
+                                <li>固体含量</li>
+                            </ul>
+                        </li>
+                        <li>系统要求
+                            <ul>
+                                <li>连续/间歇运行</li>
+                                <li>室内/室外安装</li>
+                                <li>空间限制</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Design Considerations -->
+        <div class="manual-section">
+            <h3>2. 设计考虑</h3>
+            <div class="section-content">
+                <div class="subsection">
+                    <h4>2.1 叶轮设计</h4>
+                    <ul>
+                        <li>比转速 (ns)
+                            <div class="formula">
+                                ns = n × Q^0.5 / H^0.75
+                            </div>
+                        </li>
+                        <li>叶轮类型
+                            <ul>
+                                <li>闭式：高效率，清洁液体</li>
+                                <li>半开式：适用含固体颗粒</li>
+                                <li>开式：大颗粒，高粘度</li>
+                            </ul>
+                        </li>
+                        <li>叶片数量选择
+                            <table>
+                                <tr>
+                                    <th>比转速</th>
+                                    <th>推荐叶片数</th>
+                                </tr>
+                                <tr>
+                                    <td>40-80</td>
+                                    <td>5-7</td>
+                                </tr>
+                                <tr>
+                                    <td>80-150</td>
+                                    <td>6-8</td>
+                                </tr>
+                                <tr>
+                                    <td>150-300</td>
+                                    <td>7-9</td>
+                                </tr>
+                            </table>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="subsection">
+                    <h4>2.2 轴设计</h4>
+                    <ul>
+                        <li>临界转速
+                            <div class="formula">
+                                第一临界转速 > 运行转速 × 1.25
+                            </div>
+                        </li>
+                        <li>轴挠度
+                            <div class="note">
+                                密封面处最大允许挠度: 0.05mm (0.002")
+                            </div>
+                        </li>
+                        <li>材料选择
+                            <ul>
+                                <li>标准：AISI 420</li>
+                                <li>耐腐蚀：双相不锈钢</li>
+                                <li>高温：17-4PH</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Installation & Maintenance -->
+        <div class="manual-section">
+            <h3>3. 安装与维护</h3>
+            <div class="section-content">
+                <div class="subsection">
+                    <h4>3.1 安装要求</h4>
+                    <ul>
+                        <li>基础
+                            <ul>
+                                <li>最小质量：泵质量的3倍</li>
+                                <li>水平度公差：0.1mm/m</li>
+                            </ul>
+                        </li>
+                        <li>管道支撑
+                            <ul>
+                                <li>需要独立支撑</li>
+                                <li>管道应力不得传递到泵法兰</li>
+                            </ul>
+                        </li>
+                        <li>对中
+                            <div class="note">
+                                最大不对中量：<br>
+                                - 平行度：0.1mm<br>
+                                - 角度：0.1mm/100mm
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="subsection">
+                    <h4>3.2 维护计划</h4>
+                    <table>
+                        <tr>
+                            <th>项目</th>
+                            <th>周期</th>
+                            <th>检查点</th>
+                        </tr>
+                        <tr>
+                            <td>轴承</td>
+                            <td>3000小时</td>
+                            <td>温度、噪音、振动</td>
+                        </tr>
+                        <tr>
+                            <td>机械密封</td>
+                            <td>每月</td>
+                            <td>泄漏、温度</td>
+                        </tr>
+                        <tr>
+                            <td>联轴器</td>
+                            <td>6个月</td>
+                            <td>对中、磨损</td>
+                        </tr>
+                        <tr>
+                            <td>性能</td>
+                            <td>每年</td>
+                            <td>流量、压力、功率</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="manual-section">
+            <h3>4. 故障排除指南</h3>
+            <div class="section-content">
+                <table>
+                    <tr>
+                        <th>问题</th>
+                        <th>可能原因</th>
+                        <th>解决方案</th>
+                    </tr>
+                    <tr>
+                        <td>无流量</td>
+                        <td>
+                            - 泵未充水<br>
+                            - 转向错误<br>
+                            - 吸入口堵塞
+                        </td>
+                        <td>
+                            - 检查充水<br>
+                            - 检查转向<br>
+                            - 清理吸入口
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>流量低</td>
+                        <td>
+                            - 空气泄漏<br>
+                            - 密封环磨损<br>
+                            - 叶轮部分堵塞
+                        </td>
+                        <td>
+                            - 检查密封和接头<br>
+                            - 更换密封环<br>
+                            - 清理叶轮
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>功率过大</td>
+                        <td>
+                            - 流量过大<br>
+                            - 机械摩擦<br>
+                            - 对中不良
+                        </td>
+                        <td>
+                            - 检查系统阻力<br>
+                            - 检查轴承<br>
+                            - 重新对中
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

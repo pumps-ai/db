@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>振动分析 - 离心泵工程师工具箱</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 聊天界面样式 */
+        .chat-section {
+            height: 800px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+
+        #chatMessages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+
+        .message.user {
+            background: #e3f2fd;
+            margin-left: auto;
+        }
+
+        .message.ai {
+            background: white;
+            border: 1px solid #ddd;
+        }
+
+        /* 输入区域样式 */
+        .input-area {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            background: white;
+        }
+
+        /* 附件预览样式 */
+        #attachmentPreview {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            display: none;
+        }
+
+        #imagePreview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-category">
+                <h3>计算工具</h3>
+                <ul>
+                    <li><a href="optimization.html">优化计算</a></li>
+                    <li><a href="balance.html">叶轮平衡</a></li>
+                    <li><a href="unit-converter.html">单位换算</a></li>
+                    <li><a href="pipe-loss.html">管道损失</a></li>
+                    <li><a href="stress-relief.html">应力消除</a></li>
+                <li><a href="vibration-analysis.html">振动分析</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-category">
+                <h3>技术资料</h3>
+                <ul>
+                    <li><a href="manual.html">技术手册</a></li>
+                    <li><a href="cases.html">应用案例</a></li>
+                </ul>
+            </div>
+
+        <div class="sidebar-category">
+            <h3>用户中心</h3>
+            <ul>
+                <li><a href="#" class="user-management">长期用户管理</a></li>
+            </ul>
+        </div>
+        </div>
+
+    <!-- 主内容区域 -->
+    <div class="container">
+        <div class="calculator-container">
+            <div class="page-header">
+                <h2>振动分析</h2>
+                    <a href="index.html" class="back-link">返回首页</a>
+            </div>
+
+            <!-- 聊天界面 -->
+                        <div class="chat-section">
+                <!-- 聊天历史 -->
+                <div id="chatMessages">
+                                <div class="message ai">
+                        <p>您好！我是振动分析助手。请上传频谱图或描述您的问题，我会协助您进行分析。</p>
+                                </div>
+                            </div>
+
+                            <!-- 输入区域 -->
+                <div class="input-area">
+                    <!-- 附件预览 -->
+                    <div id="attachmentPreview">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span id="attachmentName"></span>
+                            <button onclick="removeAttachment()" style="padding: 4px 8px;">×</button>
+                                    </div>
+                        <img id="imagePreview">
+                                </div>
+                                
+                    <!-- 输入控件 -->
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="document.getElementById('fileInput').click()" style="width: auto;">
+                            上传图片
+                                    </button>
+                                    <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+                                    
+                        <input type="text" id="chatInput" placeholder="请输入您的问题..." style="flex: 1;">
+                        <button id="sendButton">发送</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // API配置
+    const API_CONFIG = {
+        endpoint: 'https://chatapi.littlewheat.com/v1/chat/completions',
+        key: 'sk-aUUZLqx3b5uhCeIOlhJ3YofegyBV5I3OyyT9mG9GfKJVEEJ6',
+        model: 'gpt-4o'
+    };
+    
+    // 等待DOM加载完成
+    document.addEventListener('DOMContentLoaded', function() {
+        // 获取DOM元素
+        const chatInput = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendButton');
+        const chatMessages = document.getElementById('chatMessages');
+        const fileInput = document.getElementById('fileInput');
+    
+        // 绑定事件监听
+        sendButton.onclick = sendMessage;
+        chatInput.onkeypress = function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        };
+        fileInput.onchange = handleFileSelect;
+
+        // 文件选择处理
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleImagePreview(file);
+            }
+        }
+    
+        // 图片预览处理
+        function handleImagePreview(file) {
+            if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                    document.getElementById('attachmentPreview').style.display = 'block';
+                    document.getElementById('attachmentName').textContent = file.name;
+                    };
+                    reader.readAsDataURL(file);
+            }
+        }
+
+        // 移除附件
+        window.removeAttachment = function() {
+            document.getElementById('imagePreview').src = '';
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('attachmentPreview').style.display = 'none';
+            document.getElementById('attachmentName').textContent = '';
+            fileInput.value = '';
+        };
+    
+        // 发送消息
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            const file = fileInput.files[0];
+            
+            if (!message && !file) return;
+    
+                // 添加用户消息
+                if (message) {
+                    appendMessage('user', message);
+                }
+                
+            // 添加图片消息
+                if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                    appendMessage('user', `<img src="${e.target.result}" style="max-width: 300px;">`);
+                        };
+                        reader.readAsDataURL(file);
+                    removeAttachment();
+                }
+                
+                chatInput.value = '';
+            appendMessage('ai', '正在思考...', 'typing');
+    
+            try {
+                const response = await fetch(API_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_CONFIG.key}`
+                    },
+                    body: JSON.stringify({
+                        model: API_CONFIG.model,
+                        messages: [{
+                            role: 'system',
+                            content: '你是一个专业的离心泵振动分析专家'
+                        }, {
+                            role: 'user',
+                            content: message
+                        }]
+                    })
+                });
+    
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error?.message || `API请求失败: ${response.status}`);
+                }
+    
+                document.querySelector('.typing')?.remove();
+                appendMessage('ai', data.choices[0].message.content);
+            } catch (error) {
+                console.error('API调用错误:', error);
+                document.querySelector('.typing')?.remove();
+                appendMessage('ai', `抱歉，发生了错误: ${error.message}`);
+            }
+        }
+
+        // 添加消息到对话框
+        function appendMessage(type, content, className = '') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type} ${className}`;
+            messageDiv.innerHTML = content;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    });
+    </script>
+</body>
+</html>

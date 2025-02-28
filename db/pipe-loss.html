@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管道损失计算</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+        <div class="sidebar-category">
+            <h3>计算工具</h3>
+            <ul>
+                <li><a href="optimization.html">优化计算</a></li>
+                <li><a href="balance.html">叶轮平衡</a></li>
+                <li><a href="unit-converter.html">单位换算</a></li>
+                <li><a href="pipe-loss.html">管道损失</a></li>
+                <li><a href="stress-relief.html">应力消除</a></li>
+                <li><a href="vibration-analysis.html">振动分析</a></li>
+            </ul>
+        </div>
+        
+        <div class="sidebar-category">
+            <h3>技术资料</h3>
+            <ul>
+                <li><a href="manual.html">技术手册</a></li>
+                <li><a href="cases.html">应用案例</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-category">
+            <h3>用户中心</h3>
+            <ul>
+                <li><a href="#" class="user-management">长期用户管理</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="calculator-container">
+            <div class="page-header">
+                <h2>管道损失计算</h2>
+                <a href="index.html" class="back-link">返回首页</a>
+            </div>
+            <div class="calc-layout">
+                <div class="input-section">
+                    <!-- 流体参数 -->
+                    <div class="loss-section">
+                        <h3>流体参数</h3>
+                        <div class="horizontal-inputs">
+                            <div class="input-group">
+                                <label for="flow-rate">流量 (m³/h):</label>
+                                <input type="number" id="flow-rate" placeholder="输入流量">
+                            </div>
+                            <div class="input-group">
+                                <label for="viscosity">运动粘度 (cSt):</label>
+                                <input type="number" id="viscosity" value="1" placeholder="输入粘度">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 管道参数 -->
+                    <div class="loss-section">
+                        <h3>管道参数</h3>
+                        <div class="horizontal-inputs">
+                            <div class="input-group">
+                                <label for="pipe-diameter">管径 (mm):</label>
+                                <input type="number" id="pipe-diameter" placeholder="输入管径">
+                            </div>
+                            <div class="input-group">
+                                <label for="pipe-length">管长 (m):</label>
+                                <input type="number" id="pipe-length" placeholder="输入管长">
+                            </div>
+                            <div class="input-group">
+                                <label for="roughness">管道粗糙度 (μm):</label>
+                                <select id="roughness">
+                                    <option value="15">无缝钢管(15μm)</option>
+                                    <option value="20">焊接钢管(20μm)</option>
+                                    <option value="24">铸铁管(24μm)</option>
+                                    <option value="10">塑料管(10μm)</option>
+                                    <option value="custom">自定义...</option>
+                                </select>
+                                <input type="number" id="custom-roughness" 
+                                       style="display: none; width: 100px;" 
+                                       placeholder="输入粗糙度(μm)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 局部损失 -->
+                    <div class="loss-section">
+                        <h3>局部损失系数</h3>
+                        <div class="input-group">
+                            <label>选择局部损失项:</label>
+                            <select id="loss-item">
+                                <option value="0.5">90°弯头</option>
+                                <option value="0.3">45°弯头</option>
+                                <option value="0.2">大半径弯头</option>
+                                <option value="10">闸阀全开</option>
+                                <option value="2.5">球阀全开</option>
+                                <option value="3.5">止回阀</option>
+                                <option value="0.5">入口损失</option>
+                                <option value="1.0">出口损失</option>
+                            </select>
+                            <button onclick="addLossItem()" style="width: auto;">添加</button>
+                        </div>
+                        <div class="table-container">
+                            <table id="loss-items">
+                                <tr>
+                                    <th>项目</th>
+                                    <th>系数</th>
+                                    <th>操作</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <button onclick="calculate()">计算</button>
+                </div>
+
+                <div class="results-section">
+                    <div class="results">
+                        <h3>计算结果</h3>
+                        <div class="result-item" id="velocity-result">流速: </div>
+                        <div class="result-item" id="reynolds-result">雷诺数: </div>
+                        <div class="result-item" id="friction-loss">摩擦损失: </div>
+                        <div class="result-item" id="local-loss">局部损失: </div>
+                        <div class="result-item" id="total-loss">总损失: </div>
+
+                        <h3>计算说明</h3>
+                        <div class="result-item">
+                            <strong>计算公式:</strong>
+                            <ul>
+                                <li>流速 v = Q / A</li>
+                                <li>雷诺数 Re = v × d / ν</li>
+                                <li>摩擦损失 hf = λ × (L/D) × (v²/2g)</li>
+                                <li>局部损失 hl = Σ(ξ × v²/2g)</li>
+                            </ul>
+                        </div>
+                        <div class="result-item">
+                            <strong>注意事项:</strong>
+                            <ul>
+                                <li>所有损失单位为米水柱(mH₂O)</li>
+                                <li>流量单位为立方米每小时(m³/h)</li>
+                                <li>管径单位为毫米(mm)</li>
+                                <li>粘度单位为厘斯(cSt)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let lossItems = [];
+
+        function addLossItem() {
+            const select = document.getElementById('loss-item');
+            const item = {
+                name: select.options[select.selectedIndex].text,
+                coefficient: parseFloat(select.value)
+            };
+            lossItems.push(item);
+            updateLossTable();
+        }
+
+        function removeLossItem(index) {
+            lossItems.splice(index, 1);
+            updateLossTable();
+        }
+
+        function updateLossTable() {
+            const table = document.getElementById('loss-items');
+            // 保留表头
+            table.innerHTML = `
+                <tr>
+                    <th>项目</th>
+                    <th>系数</th>
+                    <th>操作</th>
+                </tr>
+            `;
+            lossItems.forEach((item, index) => {
+                const row = table.insertRow();
+                row.insertCell(0).textContent = item.name;
+                row.insertCell(1).textContent = item.coefficient;
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = '删除';
+                deleteButton.onclick = () => removeLossItem(index);
+                row.insertCell(2).appendChild(deleteButton);
+            });
+        }
+
+        function calculate() {
+            // 获取输入值
+            const Q = parseFloat(document.getElementById('flow-rate').value) / 3600; // 转换为m³/s
+            const D = parseFloat(document.getElementById('pipe-diameter').value) / 1000; // 转换为m
+            const L = parseFloat(document.getElementById('pipe-length').value);
+            
+            // 获取粗糙度值并转换单位（从μm转换为m）
+            let ks;
+            if (document.getElementById('roughness').value === 'custom') {
+                ks = parseFloat(document.getElementById('custom-roughness').value) / 1000000; // μm转换为m
+            } else {
+                ks = parseFloat(document.getElementById('roughness').value) / 1000000; // μm转换为m
+            }
+            
+            const nu = parseFloat(document.getElementById('viscosity').value) / 1000000; // 转换为m²/s
+
+            // 计算流速
+            const A = Math.PI * Math.pow(D/2, 2);
+            const v = Q / A;
+
+            // 计算雷诺数
+            const Re = v * D / nu;
+
+            // 计算摩擦系数
+            let lambda;
+            if (Re < 2300) {
+                lambda = 64 / Re;
+            } else {
+                // Colebrook-White方程迭代求解
+                lambda = 0.02; // 初始值
+                for (let i = 0; i < 20; i++) {
+                    lambda = 1 / Math.pow(2 * Math.log10(ks/(3.7*D) + 2.51/(Re*Math.sqrt(lambda))), 2);
+                }
+            }
+
+            // 计算摩擦损失
+            const hf = lambda * (L/D) * Math.pow(v,2) / (2 * 9.81);
+
+            // 计算局部损失
+            const totalLocalCoeff = lossItems.reduce((sum, item) => sum + item.coefficient, 0);
+            const hl = totalLocalCoeff * Math.pow(v,2) / (2 * 9.81);
+
+            // 更新结果显示
+            document.getElementById('velocity-result').textContent = `流速: ${(v).toFixed(2)} m/s`;
+            document.getElementById('reynolds-result').textContent = `雷诺数: ${Re.toFixed(0)}`;
+            document.getElementById('friction-loss').textContent = `摩擦损失: ${hf.toFixed(2)} mH₂O`;
+            document.getElementById('local-loss').textContent = `局部损失: ${hl.toFixed(2)} mH₂O`;
+            document.getElementById('total-loss').textContent = `总损失: ${(hf + hl).toFixed(2)} mH₂O`;
+        }
+
+        document.getElementById('roughness').addEventListener('change', function() {
+            const customInput = document.getElementById('custom-roughness');
+            if (this.value === 'custom') {
+                customInput.style.display = 'inline-block';
+            } else {
+                customInput.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html> 

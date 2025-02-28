@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大气压力计算 - 离心泵工程师工具箱</title>
+    <style>
+        /* 
+         * Version: 1.0.2
+         * Last Update: 2024-03-xx
+         * Important: 这是一个稳定的样式版本，所有计算工具页面都应该使用这个版本的样式
+         * 特点: 统一的返回链接样式 - 白字蓝底
+         * 特点: 响应式设计，支持手机和PC浏览器
+         */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;  /* 标准背景色 */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .back-link {
+            display: inline-block;
+            margin: 20px 0;
+            color: white;
+            text-decoration: none;
+            align-self: flex-start;
+            margin-left: 20px;
+            background-color: #34495e;
+            padding: 10px 20px;
+            border-radius: 4px;
+        }
+        .back-link:hover {
+            background-color: #2c3e50;
+        }
+        .calculator-container {
+            max-width: 800px;
+            width: 95%;
+            margin: 20px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-sizing: border-box;  /* 确保padding不会导致溢出 */
+        }
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            -webkit-appearance: none;  /* 移除iOS默认样式 */
+            font-size: 16px;  /* 防止iOS缩放 */
+        }
+        button {
+            background-color: #34495e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        button:hover {
+            background-color: #2c3e50;
+        }
+        .result-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .formula-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .formula {
+            font-family: monospace;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        /* 响应式布局调整 */
+        @media screen and (max-width: 768px) {
+            .calculator-container {
+                padding: 15px;
+                margin: 10px auto;
+            }
+            .back-link {
+                margin: 10px;
+                font-size: 14px;
+            }
+            h2 {
+                font-size: 1.5em;
+            }
+            label {
+                font-size: 14px;
+            }
+            .result-section, .formula-section {
+                padding: 15px;
+            }
+            table {
+                font-size: 14px;
+            }
+            th, td {
+                padding: 6px;
+            }
+        }
+        /* 确保在小屏幕上表格可以滚动 */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← 返回主页</a>
+    <div class="calculator-container">
+        <h2>大气压力计算器</h2>
+        
+        <div class="input-group">
+            <label for="altitude">海拔高度 (米)</label>
+            <input type="number" id="altitude" placeholder="输入海拔高度">
+            
+            <label for="temperature">环境温度 (°C)</label>
+            <input type="number" id="temperature" placeholder="输入环境温度" value="20">
+            
+            <button onclick="calculatePressure()">计算</button>
+        </div>
+
+        <div class="result-section">
+            <h3>计算结果</h3>
+            <div id="results">
+                <p>标准大气压: <span id="standardPressure">-- kPa</span></p>
+                <p>修正大气压: <span id="correctedPressure">-- kPa</span></p>
+                <p>其他单位换算:</p>
+                <ul>
+                    <li>巴 (bar): <span id="pressureBar">--</span></li>
+                    <li>毫米汞柱 (mmHg): <span id="pressureMmHg">--</span></li>
+                    <li>磅/平方英寸 (psi): <span id="pressurePsi">--</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="formula-section">
+            <h3>计算公式</h3>
+            <p>标准大气压随海拔高度的变化公式：</p>
+            <div class="formula">
+                P = P₀ × (1 - 0.0065h/288.15)^5.255
+            </div>
+            <p>其中：</p>
+            <ul>
+                <li>P = 海拔高度处的大气压 (kPa)</li>
+                <li>P₀ = 海平面标准大气压 (101.325 kPa)</li>
+                <li>h = 海拔高度 (m)</li>
+            </ul>
+            
+            <p>温度修正：</p>
+            <div class="formula">
+                P_corrected = P × (293.15 / (273.15 + T))
+            </div>
+            <p>其中：</p>
+            <ul>
+                <li>T = 环境温度 (°C)</li>
+            </ul>
+        </div>
+
+        <div class="reference-section">
+            <h3>参考数据</h3>
+            <table>
+                <tr>
+                    <th>海拔高度 (m)</th>
+                    <th>标准大气压 (kPa)</th>
+                </tr>
+                <tr>
+                    <td>0</td>
+                    <td>101.325</td>
+                </tr>
+                <tr>
+                    <td>500</td>
+                    <td>95.461</td>
+                </tr>
+                <tr>
+                    <td>1000</td>
+                    <td>89.876</td>
+                </tr>
+                <tr>
+                    <td>2000</td>
+                    <td>79.501</td>
+                </tr>
+                <tr>
+                    <td>3000</td>
+                    <td>70.121</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function calculatePressure() {
+            const altitude = parseFloat(document.getElementById('altitude').value);
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            
+            if (isNaN(altitude)) {
+                alert('请输入有效的海拔高度');
+                return;
+            }
+
+            // 计算标准大气压 (kPa)
+            const P0 = 101.325; // 海平面标准大气压 (kPa)
+            const standardPressure = P0 * Math.pow(1 - 0.0065 * altitude / 288.15, 5.255);
+            
+            // 温度修正
+            const correctedPressure = standardPressure * (293.15 / (273.15 + temperature));
+            
+            // 单位换算
+            const pressureBar = correctedPressure / 100;
+            const pressureMmHg = correctedPressure * 7.50062;
+            const pressurePsi = correctedPressure * 0.145038;
+            
+            // 显示结果
+            document.getElementById('standardPressure').textContent = standardPressure.toFixed(3) + ' kPa';
+            document.getElementById('correctedPressure').textContent = correctedPressure.toFixed(3) + ' kPa';
+            document.getElementById('pressureBar').textContent = pressureBar.toFixed(3) + ' bar';
+            document.getElementById('pressureMmHg').textContent = pressureMmHg.toFixed(1) + ' mmHg';
+            document.getElementById('pressurePsi').textContent = pressurePsi.toFixed(2) + ' psi';
+        }
+    </script>
+</body>
+</html> 

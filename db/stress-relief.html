@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>应力消除 - 离心泵工程师工具箱</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-size: 14px;
+        }
+
+        .calc-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .calc-section {
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .input-row .input-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .calc-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .result-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .parameter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .parameter-table th, .parameter-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .parameter-table th {
+            background: #f5f5f5;
+        }
+
+        .note {
+            margin-top: 15px;
+            padding: 10px;
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 4px;
+            color: #856404;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .parameters {
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        .parameters p {
+            margin: 5px 0;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        canvas {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+        }
+
+        /* 修改打印样式 */
+        @media print {
+            /* A4纸张设置 */
+            @page {
+                size: A4 portrait;
+                margin: 1.5cm;  /* 缩小边距以获得更多空间 */
+            }
+
+            /* 隐藏网页元素 */
+            .sidebar, .page-header, .back-link, .button-row, .input-row {
+                display: none !important;
+            }
+
+            /* 文档标题 */
+            .pdf-header {
+                display: block !important;  /* 显示标题 */
+                text-align: center;
+                margin-bottom: 15px;
+                border-bottom: 1px solid #000;
+                padding-bottom: 10px;
+            }
+
+            .pdf-header h1 {
+                font-size: 18pt;
+                margin: 0;
+            }
+
+            /* 工艺参数部分 */
+            .parameters {
+                margin: 15px 0 !important;
+                font-size: 12pt !important;
+                line-height: 1.4 !important;
+            }
+
+            .parameters p {
+                margin: 5px 0 !important;
+            }
+
+            /* 图表容器 */
+            .chart-container {
+                width: 100% !important;
+                height: 400px !important;  /* 减小图表高度 */
+                margin: 15px auto !important;
+                page-break-inside: avoid !important;
+            }
+
+            .chart-container h3 {
+                font-size: 14pt !important;
+                margin: 0 0 10px 0 !important;
+                text-align: center !important;
+            }
+
+            /* 添加注意事项 */
+            .print-notes {
+                display: block !important;
+                margin-top: 15px !important;
+                padding: 10px !important;
+                border: 1px solid #000 !important;
+                font-size: 10pt !important;
+            }
+
+            /* 底部区域样式 */
+            .bottom-section {
+                display: block !important;
+                position: fixed !important;
+                bottom: 1.5cm !important;
+                left: 1.5cm !important;
+                right: 1.5cm !important;
+            }
+
+            /* 签字栏样式 */
+            .signature-section {
+                display: block !important;
+                margin-bottom: 15px !important;
+                font-size: 10pt !important;
+            }
+
+            /* 联系方式样式 */
+            .contact-info {
+                display: block !important;
+                text-align: center !important;
+                padding-top: 10px !important;
+                border-top: 1px solid #ccc !important;
+                font-size: 9pt !important;
+                color: #666 !important;
+            }
+
+            /* 为底部内容预留空间 */
+            .calc-container {
+                margin-bottom: 80px !important;  /* 增加底部空间 */
+            }
+
+            /* 确保文字清晰 */
+            body {
+                font-family: "SimSun", serif !important;
+                color: black !important;
+                background: white !important;
+            }
+
+            /* 材料信息表格样式 */
+            .material-info {
+                display: block !important;
+                margin: 20px 0 !important;
+                page-break-inside: avoid !important;
+            }
+
+            .material-info h4 {
+                font-size: 12pt !important;
+                margin: 15px 0 10px 0 !important;
+            }
+
+            .info-table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                font-size: 9pt !important;
+                margin-bottom: 15px !important;
+            }
+
+            .info-table th, .info-table td {
+                border: 1px solid #000 !important;
+                padding: 4px 8px !important;
+                text-align: left !important;
+            }
+
+            .info-table th {
+                background-color: #f0f0f0 !important;
+            }
+
+            /* 计算依据样式 */
+            .calculation-basis {
+                font-size: 9pt !important;
+                margin: 15px 0 !important;
+            }
+
+            .calculation-basis ul {
+                margin: 5px 0 !important;
+                padding-left: 20px !important;
+            }
+
+            .calculation-basis li {
+                margin: 3px 0 !important;
+            }
+
+            /* 调整整体布局 */
+            .calc-container {
+                margin-bottom: 100px !important;  /* 增加底部空间 */
+            }
+
+            .version {
+                font-size: 10pt !important;
+                color: #666 !important;
+                margin: 5px 0 0 0 !important;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script>
+        Chart.register(ChartDataLabels);
+
+        let tempChart = null;
+
+        // 确保在页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 注册插件
+            Chart.register(ChartDataLabels);
+            
+            // 设置默认值并计算
+            document.getElementById('diameter').value = '50'; // 设置默认直径
+            calculateStressRelief(); // 初始计算
+        });
+
+        function calculateStressRelief() {
+            const material = document.getElementById('material').value;
+            const diameter = parseFloat(document.getElementById('diameter').value);
+
+            // 转换为英寸
+            const diameterInch = diameter / 25.4;
+
+            // 计算500°F以上的加热速率（华氏度）
+            let heatingRateF = 400 / diameterInch;  // 400°F/h除以直径
+            heatingRateF = Math.max(100, Math.min(400, heatingRateF));  // 限制在100-400°F/h之间
+            
+            // 转换为摄氏度
+            const heatingRateC = Math.round((heatingRateF - 32) * 5/9);
+            // 500°F对应的摄氏度约为260°C
+            const transitionTemp = 260;
+            
+            // 计算保温时间
+            const holdingTime = Math.max(2, diameterInch);
+
+            // 设置保温温度（华氏度）
+            let holdingTempF;
+            switch(material) {
+                case '4140':
+                case '410':
+                case 'K-Monel':
+                    holdingTempF = 1050;
+                    break;
+                case '316':
+                case 'XM19':
+                case '660':
+                case 'Inconel':
+                    holdingTempF = 750;
+                    break;
+                case 'Duplex':
+                    holdingTempF = 575;
+                    break;
+                default:
+                    holdingTempF = 1050;
+            }
+            const holdingTempC = Math.round((holdingTempF - 32) * 5/9);
+
+            // 获取当前选择的材料信息
+            let materialName, unsNumber, tempInfo;
+            
+            switch(material) {
+                case '4140':
+                    materialName = '4140合金钢';
+                    unsNumber = 'G41400';
+                    tempInfo = '1050°F ± 25°F (566°C ± 14°C)';
+                    break;
+                case '410':
+                    materialName = '410不锈钢';
+                    unsNumber = 'S41000';
+                    tempInfo = '1050°F ± 25°F (566°C ± 14°C)';
+                    break;
+                case '316':
+                    materialName = '316不锈钢';
+                    unsNumber = 'S31600';
+                    tempInfo = '750°F ± 25°F (399°C ± 14°C)';
+                    break;
+                // ... 其他材料的case
+            }
+
+            // 更新材料信息表格
+            document.querySelector('.info-table tbody').innerHTML = `
+                <tr>
+                    <td>${materialName}</td>
+                    <td>${unsNumber}</td>
+                    <td>${tempInfo}</td>
+                </tr>
+            `;
+
+            // 更新显示
+            document.getElementById('heating-rate').textContent = 
+                `≤ ${heatingRateC.toFixed(1)}°C/h (>260°C)\n任意速率 (≤260°C)`;
+            document.getElementById('holding-time').textContent = 
+                `${holdingTime.toFixed(1)}小时`;
+            document.getElementById('holding-temp').textContent = 
+                `${holdingTempC}°C`;
+
+            // 绘制时间-温度曲线，考虑两段加热速率
+            drawTempChart(heatingRateC, holdingTime, holdingTempC);
+        }
+
+        function drawTempChart(heatingRate, holdingTime, holdingTemp) {
+            const ctx = document.getElementById('tempChart').getContext('2d');
+            
+            if (tempChart) {
+                tempChart.destroy();
+            }
+
+            const startTemp = 20;
+            const transitionTemp = 260;
+            
+            // 计算时间点
+            const fastHeatingRate = 400;
+            const timeToTransition = (transitionTemp - startTemp) / fastHeatingRate;
+            const timeToHoldingTemp = timeToTransition + (holdingTemp - transitionTemp) / heatingRate;
+            const timeToEndHolding = timeToHoldingTemp + holdingTime;
+            const totalTime = timeToEndHolding + (holdingTemp - transitionTemp) / heatingRate;
+
+            tempChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        data: [
+                            {x: 0, y: startTemp},
+                            {x: timeToTransition, y: transitionTemp},
+                            {x: timeToHoldingTemp, y: holdingTemp},
+                            {x: timeToEndHolding, y: holdingTemp},
+                            {x: totalTime, y: transitionTemp}
+                        ],
+                        borderColor: 'red',
+                        borderWidth: 2,
+                        pointRadius: 4,
+                        pointBackgroundColor: 'red',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: {
+                                display: true,
+                                text: '时间 (小时)'
+                            },
+                            min: 0,
+                            max: Math.ceil(totalTime)
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: '温度 (°C)'
+                            },
+                            min: 0,
+                            max: Math.ceil(holdingTemp / 100) * 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: true
+                        },
+                        datalabels: {
+                            display: false  // 禁用数据标签
+                        }
+                    }
+                }
+            });
+        }
+
+        function printChart() {
+            window.print();
+        }
+
+        function fahrenheitToCelsius(f) {
+            return (f - 32) * 5/9;
+        }
+
+        function calculateHeatingRate(diameterInch) {
+            const rateF = Math.max(100, 400/diameterInch);
+            return fahrenheitToCelsius(rateF);
+        }
+
+        // 在页面加载时检查
+        window.addEventListener('load', function() {
+            if (!TimerManager.isValid()) {
+                // 未付费或已过期，跳转回首页
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-category">
+                <h3>计算工具</h3>
+                <ul>
+                    <li><a href="optimization.html">优化计算</a></li>
+                    <li><a href="balance.html">叶轮平衡</a></li>
+                    <li><a href="unit-converter.html">单位换算</a></li>
+                    <li><a href="pipe-loss.html">管道损失</a></li>
+                    <li><a href="stress-relief.html" class="active">应力消除</a></li>
+                    <li><a href="vibration-analysis.html">振动分析</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-category">
+                <h3>技术资料</h3>
+                <ul>
+                    <li><a href="manual.html">技术手册</a></li>
+                    <li><a href="cases.html">应用案例</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="page-header">
+                <h1>应力消除计算</h1>
+                <a href="index.html" class="back-link">返回首页</a>
+            </div>
+
+            <div class="calc-container">
+                <div class="pdf-header" style="display: none;">
+                    <h1>应力消除 - 离心泵工程师工具箱</h1>
+                    <p class="version">版本 2.39</p>
+                </div>
+                <div class="calc-section">
+                    <h2>泵轴应力消除参数计算</h2>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label for="material">材料类型</label>
+                            <select id="material">
+                                <option value="4140">4140合金钢 (G41400)</option>
+                                <option value="410">410不锈钢 (S41000)</option>
+                                <option value="316">316不锈钢 (S31600)</option>
+                                <option value="XM19">XM-19不锈钢 (S20910)</option>
+                                <option value="K-Monel">K-Monel (N05500)</option>
+                                <option value="660">660不锈钢 (S66286)</option>
+                                <option value="Inconel">Inconel 600/625</option>
+                                <option value="Duplex">双相不锈钢</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="diameter">输入直径 (mm):</label>
+                            <input type="number" id="diameter" step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="button-row">
+                        <button class="calc-button" onclick="calculateStressRelief()">计算</button>
+                        <button class="calc-button" onclick="printChart()">打印</button>
+                    </div>
+
+                    <div class="result-section">
+                        <div class="parameters">
+                            <p>加热速度: <span id="heating-rate">-</span></p>
+                            <p>保温时间: <span id="holding-time">-</span></p>
+                            <p>保温温度: <span id="holding-temp">-</span></p>
+                        </div>
+
+                        <div class="material-info" style="display: none;">
+                            <h4>材料信息及计算依据：</h4>
+                            <table class="info-table">
+                                <thead>
+                                    <tr>
+                                        <th>材料类型</th>
+                                        <th>UNS编号</th>
+                                        <th>应力消除温度</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 这里的内容会由JavaScript动态更新 -->
+                                </tbody>
+                            </table>
+
+                            <div class="calculation-basis">
+                                <h4>计算依据：</h4>
+                                <p>参照标准：EPO Metallurgy PS-1653 Rev. B (2004)</p>
+                                <ul>
+                                    <li>500°F (260°C)以下可任意速率加热</li>
+                                    <li>500°F以上加热速率 = 400°F/h ÷ 轴径(inch)，且不低于100°F/h</li>
+                                    <li>保温时间 = max(2h, 轴径inch)</li>
+                                    <li>冷却要求：炉冷至500°F (260°C)后出炉</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <h3>时间-温度图</h3>
+                            <canvas id="tempChart" style="height: 400px !important;"></canvas>
+                        </div>
+
+                        <div class="print-notes" style="display: none;">
+                            <strong>执行注意事项：</strong>
+                            <ol>
+                                <li>热处理前确保工件表面清洁，无油污</li>
+                                <li>工件需垂直放置，合理支撑以防变形</li>
+                                <li>严格控制升温速率，特别是260°C以上阶段</li>
+                                <li>保温时间从达到设定温度开始计时</li>
+                                <li>冷却过程需在炉内进行，至260°C以下方可出炉</li>
+                            </ol>
+                        </div>
+
+                        <div class="bottom-section" style="display: none;">
+                            <div class="signature-section">
+                                <table style="width: 100%; margin-bottom: 15px;">
+                                    <tr>
+                                        <td style="width: 33%;">操作人：____________</td>
+                                        <td style="width: 33%;">检查人：____________</td>
+                                        <td style="width: 33%;">日期：____________</td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="contact-info">
+                                邮件：wangdongbo@gmail.com&nbsp;&nbsp;&nbsp;&nbsp;电话：13602607266
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

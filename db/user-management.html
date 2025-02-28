@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>长期用户管理 - 离心泵工程师工具箱</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .user-management {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .price-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to right, #fff, #f8f9fa);
+        }
+
+        .price-info {
+            flex: 1;
+        }
+
+        .price-title {
+            font-size: 24px;
+            color: #333;
+            margin: 0 0 15px 0;
+        }
+
+        .price-detail {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .price-features {
+            margin-top: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .price-features li {
+            margin: 8px 0;
+        }
+
+        .price-amount {
+            color: #f60;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0 30px;
+        }
+
+        .buy-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .buy-button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-category">
+                <h3>计算工具</h3>
+                <ul>
+                    <li><a href="#" onclick="PaymentFunctions.showPayment(); return false;">优化计算</a></li>
+                    <li><a href="balance.html">叶轮平衡</a></li>
+                    <li><a href="unit-converter.html">单位换算</a></li>
+                    <li><a href="pipe-loss.html">管道损失</a></li>
+                    <li><a href="#" onclick="PaymentFunctions.showPayment(); return false;">应力消除</a></li>
+                    <li><a href="#" onclick="PaymentFunctions.showPayment(); return false;">振动分析</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-category">
+                <h3>技术资料</h3>
+                <ul>
+                    <li><a href="manual.html">技术手册</a></li>
+                    <li><a href="cases.html">应用案例</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-category">
+                <h3>用户中心</h3>
+                <ul>
+                    <li><a href="user-management.html" class="active">长期用户管理</a></li>
+                    <li><a href="customer-service.html">留言客服</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <div class="page-header">
+                <h1>长期用户管理</h1>
+                <a href="index.html" class="back-link">返回首页</a>
+            </div>
+
+            <div class="user-management">
+                <div class="price-card">
+                    <div class="price-info">
+                        <h3 class="price-title">年度会员</h3>
+                        <p class="price-detail">365天无限次使用所有高级功能</p>
+                        <ul class="price-features">
+                            <li>✓ 优化计算无限次使用</li>
+                            <li>✓ AI振动分析无限次使用</li>
+                            <li>✓ 应力消除无限次使用</li>
+                            <li>✓ 优先获取新功能</li>
+                            <li>✓ 技术支持服务</li>
+                        </ul>
+                    </div>
+                    <div class="price-amount">¥440</div>
+                    <button class="buy-button" onclick="PaymentFunctions.showPayment()">立即开通</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

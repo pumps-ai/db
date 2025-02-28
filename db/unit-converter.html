@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单位换算 - 离心泵工程师工具箱</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 设置全局字体大小 */
+        body {
+            font-size: 14px;
+        }
+
+        /* 修改标题字体大小 */
+        h1 {
+            font-size: 20px;
+        }
+
+        h2 {
+            font-size: 16px;
+        }
+
+        /* 修改输入框和选择框字体大小 */
+        select, input, label {
+            font-size: 14px;
+        }
+
+        /* 修改按钮字体大小 */
+        .calc-button {
+            font-size: 14px;
+        }
+
+        /* 修改结果显示字体大小 */
+        .result-item {
+            font-size: 14px;
+        }
+
+        /* 修改分类按钮字体大小 */
+        .category-button {
+            font-size: 14px;
+        }
+
+        /* 修改箭头大小 */
+        .arrow {
+            font-size: 16px;
+        }
+
+        /* 修改返回链接字体大小 */
+        .back-link {
+            font-size: 14px;
+        }
+
+        .conversion-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            flex: 1;
+        }
+
+        .arrow {
+            font-size: 20px;
+            color: var(--primary-color);
+            margin-top: 25px;
+        }
+
+        .result-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .calc-button {
+            width: auto;
+            margin: 0;
+            padding: 8px 20px;
+        }
+
+        .result-section {
+            flex: 1;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+
+        .result-item {
+            display: flex;
+            gap: 0;
+            align-items: center;
+            padding: 8px 15px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            justify-content: flex-start;
+        }
+
+        .result-label {
+            white-space: nowrap;
+            min-width: 40px;
+        }
+
+        .result-value {
+            margin-left: 0;
+            flex: 1;
+            text-align: left;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* 添加新的分类样式 */
+        .unit-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .category-button {
+            padding: 8px 15px;
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            background: white;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .category-button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .conversion-section {
+            display: none;
+        }
+        
+        .conversion-section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <!-- 复用index.html的侧边栏 -->
+            <div class="sidebar-category">
+                <h3>计算工具</h3>
+                <ul>
+                    <li><a href="optimization.html">优化计算</a></li>
+                    <li><a href="balance.html">叶轮平衡</a></li>
+                    <li><a href="unit-converter.html" class="active">单位换算</a></li>
+                    <li><a href="pipe-loss.html">管道损失</a></li>
+                    <li><a href="stress-relief.html">应力消除</a></li>
+                    <li><a href="vibration-analysis.html">振动分析</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-category">
+                <h3>技术资料</h3>
+                <ul>
+                    <li><a href="manual.html">技术手册</a></li>
+                    <li><a href="cases.html">应用案例</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="page-header">
+                <h1>单位换算</h1>
+                <a href="index.html" class="back-link">返回首页</a>
+            </div>
+
+            <div class="calc-container">
+                <!-- 单位类型选择按钮 -->
+                <div class="unit-categories">
+                    <button class="category-button active" data-category="pressure">压力</button>
+                    <button class="category-button" data-category="flow">流量</button>
+                    <button class="category-button" data-category="length">长度</button>
+                    <button class="category-button" data-category="power">功率</button>
+                    <button class="category-button" data-category="speed">转速</button>
+                    <button class="category-button" data-category="temperature">温度</button>
+                    <button class="category-button" data-category="torque">扭矩</button>
+                    <button class="category-button" data-category="viscosity">粘度</button>
+                </div>
+
+                <!-- 压力单位换算 -->
+                <div class="conversion-section active" id="pressure-section">
+                    <h2>压力单位换算</h2>
+                    <div class="conversion-row">
+                        <div class="input-group">
+                            <label for="pressure">输入值</label>
+                            <input type="number" id="pressure" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label for="pressure-from">从</label>
+                            <select id="pressure-from">
+                                <option value="MPa">MPa (兆帕)</option>
+                                <option value="kPa">kPa (千帕)</option>
+                                <option value="bar">bar (巴)</option>
+                                <option value="psi">psi (磅/平方英寸)</option>
+                                <option value="kgf/cm2">kgf/cm² (公斤力/平方厘米)</option>
+                            </select>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="input-group">
+                            <label for="pressure-to">到</label>
+                            <select id="pressure-to">
+                                <option value="MPa">MPa (兆帕)</option>
+                                <option value="kPa">kPa (千帕)</option>
+                                <option value="bar">bar (巴)</option>
+                                <option value="psi">psi (磅/平方英寸)</option>
+                                <option value="kgf/cm2">kgf/cm² (公斤力/平方厘米)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-row">
+                        <button class="calc-button" onclick="convertPressure()">换算</button>
+                        <div class="result-section">
+                            <div class="result-item">
+                                <span class="result-label">结果</span>
+                                <span class="result-value" id="pressure-result">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 流量单位换算 -->
+                <div class="conversion-section" id="flow-section">
+                    <h2>流量单位换算</h2>
+                    <div class="conversion-row">
+                        <div class="input-group">
+                            <label for="flow">输入值</label>
+                            <input type="number" id="flow" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label for="flow-from">从</label>
+                            <select id="flow-from">
+                                <option value="m3/h">m³/h (立方米/小时)</option>
+                                <option value="L/s">L/s (升/秒)</option>
+                                <option value="L/min">L/min (升/分钟)</option>
+                                <option value="gpm">GPM (加仑/分钟)</option>
+                            </select>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="input-group">
+                            <label for="flow-to">到</label>
+                            <select id="flow-to">
+                                <option value="m3/h">m³/h (立方米/小时)</option>
+                                <option value="L/s">L/s (升/秒)</option>
+                                <option value="L/min">L/min (升/分钟)</option>
+                                <option value="gpm">GPM (加仑/分钟)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-row">
+                        <button class="calc-button" onclick="convertFlow()">换算</button>
+                        <div class="result-section">
+                            <div class="result-item">
+                                <span class="result-label">结果</span>
+                                <span class="result-value" id="flow-result">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 长度单位换算 -->
+                <div class="conversion-section" id="length-section">
+                    <h2>长度单位换算</h2>
+                    <div class="conversion-row">
+                        <div class="input-group">
+                            <label for="length">输入值</label>
+                            <input type="number" id="length" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label for="length-from">从</label>
+                            <select id="length-from">
+                                <option value="m">米 (m)</option>
+                                <option value="mm">毫米 (mm)</option>
+                                <option value="cm">厘米 (cm)</option>
+                                <option value="inch">英寸 (in)</option>
+                                <option value="ft">英尺 (ft)</option>
+                            </select>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="input-group">
+                            <label for="length-to">到</label>
+                            <select id="length-to">
+                                <option value="m">米 (m)</option>
+                                <option value="mm">毫米 (mm)</option>
+                                <option value="cm">厘米 (cm)</option>
+                                <option value="inch">英寸 (in)</option>
+                                <option value="ft">英尺 (ft)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-row">
+                        <button class="calc-button" onclick="convertLength()">换算</button>
+                        <div class="result-section">
+                            <div class="result-item">
+                                <span class="result-label">结果</span>
+                                <span class="result-value" id="length-result">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 功率单位换算 -->
+                <div class="conversion-section" id="power-section">
+                    <h2>功率单位换算</h2>
+                    <div class="conversion-row">
+                        <div class="input-group">
+                            <label for="power">输入值</label>
+                            <input type="number" id="power" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label for="power-from">从</label>
+                            <select id="power-from">
+                                <option value="kW">千瓦 (kW)</option>
+                                <option value="W">瓦特 (W)</option>
+                                <option value="hp">马力 (hp)</option>
+                                <option value="PS">公制马力 (PS)</option>
+                            </select>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="input-group">
+                            <label for="power-to">到</label>
+                            <select id="power-to">
+                                <option value="kW">千瓦 (kW)</option>
+                                <option value="W">瓦特 (W)</option>
+                                <option value="hp">马力 (hp)</option>
+                                <option value="PS">公制马力 (PS)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-row">
+                        <button class="calc-button" onclick="convertPower()">换算</button>
+                        <div class="result-section">
+                            <div class="result-item">
+                                <span class="result-label">结果</span>
+                                <span class="result-value" id="power-result">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 转速单位换算 -->
+                <div class="conversion-section" id="speed-section">
+                    <h2>转速单位换算</h2>
+                    <div class="conversion-row">
+                        <div class="input-group">
+                            <label for="speed">输入值</label>
+                            <input type="number" id="speed" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label for="speed-from">从</label>
+                            <select id="speed-from">
+                                <option value="rpm">转每分钟 (rpm)</option>
+                                <option value="rps">转每秒 (rps)</option>
+                                <option value="rad/s">弧度每秒 (rad/s)</option>
+                                <option value="Hz">赫兹 (Hz)</option>
+                            </select>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="input-group">
+                            <label for="speed-to">到</label>
+                            <select id="speed-to">
+                                <option value="rpm">转每分钟 (rpm)</option>
+                                <option value="rps">转每秒 (rps)</option>
+                                <option value="rad/s">弧度每秒 (rad/s)</option>
+                                <option value="Hz">赫兹 (Hz)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-row">
+                        <button class="calc-button" onclick="convertSpeed()">换算</button>
+                        <div class="result-section">
+                            <div class="result-item">
+                                <span class="result-label">结果</span>
+                                <span class="result-value" id="speed-result">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 温度单位换算 -->
+                <div class="conversion-section" id="temperature-section">
+                    <h2>温度单位换算</h2>
+                    <div class="conversion-row">
+                        <div class="input-group">
+                            <label for="temperature">输入值</label>
+                            <input type="number" id="temperature" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label for="temperature-from">从</label>
+                            <select id="temperature-from">
+                                <option value="C">摄氏度 (°C)</option>
+                                <option value="F">华氏度 (°F)</option>
+                                <option value="K">开尔文 (K)</option>
+                            </select>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="input-group">
+                            <label for="temperature-to">到</label>
+                            <select id="temperature-to">
+                                <option value="C">摄氏度 (°C)</option>
+                                <option value="F">华氏度 (°F)</option>
+                                <option value="K">开尔文 (K)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-row">
+                        <button class="calc-button" onclick="convertTemperature()">换算</button>
+                        <div class="result-section">
+                            <div class="result-item">
+                                <span class="result-label">结果</span>
+                                <span class="result-value" id="temperature-result">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 扭矩单位换算 -->
+                <div class="conversion-section" id="torque-section">
+                    <h2>扭矩单位换算</h2>
+                    <div class="conversion-row">
+                        <div class="input-group">
+                            <label for="torque">输入值</label>
+                            <input type="number" id="torque" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label for="torque-from">从</label>
+                            <select id="torque-from">
+                                <option value="N.m">牛顿米 (N⋅m)</option>
+                                <option value="kgf.m">公斤力米 (kgf⋅m)</option>
+                                <option value="ft.lbf">英尺磅力 (ft⋅lbf)</option>
+                                <option value="in.lbf">英寸磅力 (in⋅lbf)</option>
+                            </select>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="input-group">
+                            <label for="torque-to">到</label>
+                            <select id="torque-to">
+                                <option value="N.m">牛顿米 (N⋅m)</option>
+                                <option value="kgf.m">公斤力米 (kgf⋅m)</option>
+                                <option value="ft.lbf">英尺磅力 (ft⋅lbf)</option>
+                                <option value="in.lbf">英寸磅力 (in⋅lbf)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-row">
+                        <button class="calc-button" onclick="convertTorque()">换算</button>
+                        <div class="result-section">
+                            <div class="result-item">
+                                <span class="result-label">结果</span>
+                                <span class="result-value" id="torque-result">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 粘度单位换算 -->
+                <div class="conversion-section" id="viscosity-section">
+                    <h2>粘度单位换算</h2>
+                    <div class="conversion-row">
+                        <div class="input-group">
+                            <label for="viscosity">输入值</label>
+                            <input type="number" id="viscosity" step="any">
+                        </div>
+                        <div class="input-group">
+                            <label for="viscosity-from">从</label>
+                            <select id="viscosity-from">
+                                <option value="Pa.s">帕斯卡秒 (Pa⋅s)</option>
+                                <option value="mPa.s">毫帕斯卡秒 (mPa⋅s)</option>
+                                <option value="cP">厘泊 (cP)</option>
+                                <option value="P">泊 (P)</option>
+                                <option value="cSt">厘斯 (cSt)</option>
+                                <option value="m2/s">平方米/秒 (m²/s)</option>
+                            </select>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="input-group">
+                            <label for="viscosity-to">到</label>
+                            <select id="viscosity-to">
+                                <option value="Pa.s">帕斯卡秒 (Pa⋅s)</option>
+                                <option value="mPa.s">毫帕斯卡秒 (mPa⋅s)</option>
+                                <option value="cP">厘泊 (cP)</option>
+                                <option value="P">泊 (P)</option>
+                                <option value="cSt">厘斯 (cSt)</option>
+                                <option value="m2/s">平方米/秒 (m²/s)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-row">
+                        <button class="calc-button" onclick="convertViscosity()">换算</button>
+                        <div class="result-section">
+                            <div class="result-item">
+                                <span class="result-label">结果</span>
+                                <span class="result-value" id="viscosity-result">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 单位换算函数
+        function convertPressure() {
+            const value = parseFloat(document.getElementById('pressure').value);
+            const fromUnit = document.getElementById('pressure-from').value;
+            const toUnit = document.getElementById('pressure-to').value;
+            
+            // 先转换为MPa作为中间单位
+            let mpa = value;
+            switch(fromUnit) {
+                case 'kPa': mpa = value / 1000; break;
+                case 'bar': mpa = value / 10; break;
+                case 'psi': mpa = value * 0.006894757; break;
+                case 'kgf/cm2': mpa = value * 0.0980665; break;
+            }
+            
+            // 从MPa转换为目标单位
+            let result;
+            switch(toUnit) {
+                case 'MPa': result = mpa; break;
+                case 'kPa': result = mpa * 1000; break;
+                case 'bar': result = mpa * 10; break;
+                case 'psi': result = mpa / 0.006894757; break;
+                case 'kgf/cm2': result = mpa / 0.0980665; break;
+            }
+            
+            document.getElementById('pressure-result').textContent = 
+                result.toFixed(4) + ' ' + toUnit;
+        }
+
+        function convertFlow() {
+            const value = parseFloat(document.getElementById('flow').value);
+            const fromUnit = document.getElementById('flow-from').value;
+            const toUnit = document.getElementById('flow-to').value;
+            
+            // 先转换为m³/h作为中间单位
+            let m3h = value;
+            switch(fromUnit) {
+                case 'L/s': m3h = value * 3.6; break;
+                case 'L/min': m3h = value * 0.06; break;
+                case 'gpm': m3h = value * 0.227124; break;
+            }
+            
+            // 从m³/h转换为目标单位
+            let result;
+            switch(toUnit) {
+                case 'm3/h': result = m3h; break;
+                case 'L/s': result = m3h / 3.6; break;
+                case 'L/min': result = m3h / 0.06; break;
+                case 'gpm': result = m3h / 0.227124; break;
+            }
+            
+            document.getElementById('flow-result').textContent = 
+                result.toFixed(4) + ' ' + toUnit;
+        }
+
+        // 添加新的转换函数
+        function convertLength() {
+            const value = parseFloat(document.getElementById('length').value);
+            const fromUnit = document.getElementById('length-from').value;
+            const toUnit = document.getElementById('length-to').value;
+            
+            // 转换为米作为中间单位
+            let meters = value;
+            switch(fromUnit) {
+                case 'mm': meters = value / 1000; break;
+                case 'cm': meters = value / 100; break;
+                case 'inch': meters = value * 0.0254; break;
+                case 'ft': meters = value * 0.3048; break;
+            }
+            
+            // 从米转换为目标单位
+            let result;
+            switch(toUnit) {
+                case 'm': result = meters; break;
+                case 'mm': result = meters * 1000; break;
+                case 'cm': result = meters * 100; break;
+                case 'inch': result = meters / 0.0254; break;
+                case 'ft': result = meters / 0.3048; break;
+            }
+            
+            document.getElementById('length-result').textContent = 
+                result.toFixed(4) + ' ' + toUnit;
+        }
+
+        // 类别切换功能
+        const categoryButtons = document.querySelectorAll('.category-button');
+        const sections = document.querySelectorAll('.conversion-section');
+
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // 移除所有active类
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                sections.forEach(section => section.classList.remove('active'));
+                
+                // 添加active类到选中的按钮和对应的部分
+                button.classList.add('active');
+                const category = button.dataset.category;
+                document.getElementById(`${category}-section`).classList.add('active');
+            });
+        });
+
+        // 功率换算函数
+        function convertPower() {
+            const value = parseFloat(document.getElementById('power').value);
+            const fromUnit = document.getElementById('power-from').value;
+            const toUnit = document.getElementById('power-to').value;
+            
+            // 转换为kW作为中间单位
+            let kw = value;
+            switch(fromUnit) {
+                case 'W': kw = value / 1000; break;
+                case 'hp': kw = value * 0.7457; break;
+                case 'PS': kw = value * 0.7355; break;
+            }
+            
+            // 从kW转换为目标单位
+            let result;
+            switch(toUnit) {
+                case 'kW': result = kw; break;
+                case 'W': result = kw * 1000; break;
+                case 'hp': result = kw / 0.7457; break;
+                case 'PS': result = kw / 0.7355; break;
+            }
+            
+            document.getElementById('power-result').textContent = 
+                result.toFixed(4) + ' ' + toUnit;
+        }
+
+        // 转速换算函数
+        function convertSpeed() {
+            const value = parseFloat(document.getElementById('speed').value);
+            const fromUnit = document.getElementById('speed-from').value;
+            const toUnit = document.getElementById('speed-to').value;
+            
+            // 转换为rpm作为中间单位
+            let rpm = value;
+            switch(fromUnit) {
+                case 'rps': rpm = value * 60; break;
+                case 'rad/s': rpm = value * (60 / (2 * Math.PI)); break;
+                case 'Hz': rpm = value * 60; break;
+            }
+            
+            // 从rpm转换为目标单位
+            let result;
+            switch(toUnit) {
+                case 'rpm': result = rpm; break;
+                case 'rps': result = rpm / 60; break;
+                case 'rad/s': result = rpm * ((2 * Math.PI) / 60); break;
+                case 'Hz': result = rpm / 60; break;
+            }
+            
+            document.getElementById('speed-result').textContent = 
+                result.toFixed(4) + ' ' + toUnit;
+        }
+
+        // 温度换算函数
+        function convertTemperature() {
+            const value = parseFloat(document.getElementById('temperature').value);
+            const fromUnit = document.getElementById('temperature-from').value;
+            const toUnit = document.getElementById('temperature-to').value;
+            
+            // 先转换为摄氏度
+            let celsius = value;
+            switch(fromUnit) {
+                case 'F': celsius = (value - 32) * 5/9; break;
+                case 'K': celsius = value - 273.15; break;
+            }
+            
+            // 从摄氏度转换为目标单位
+            let result;
+            switch(toUnit) {
+                case 'C': result = celsius; break;
+                case 'F': result = celsius * 9/5 + 32; break;
+                case 'K': result = celsius + 273.15; break;
+            }
+            
+            document.getElementById('temperature-result').textContent = 
+                result.toFixed(4) + ' ' + toUnit;
+        }
+
+        // 扭矩换算函数
+        function convertTorque() {
+            const value = parseFloat(document.getElementById('torque').value);
+            const fromUnit = document.getElementById('torque-from').value;
+            const toUnit = document.getElementById('torque-to').value;
+            
+            // 转换为N⋅m作为中间单位
+            let nm = value;
+            switch(fromUnit) {
+                case 'kgf.m': nm = value * 9.80665; break;
+                case 'ft.lbf': nm = value * 1.355818; break;
+                case 'in.lbf': nm = value * 0.112985; break;
+            }
+            
+            // 从N⋅m转换为目标单位
+            let result;
+            switch(toUnit) {
+                case 'N.m': result = nm; break;
+                case 'kgf.m': result = nm / 9.80665; break;
+                case 'ft.lbf': result = nm / 1.355818; break;
+                case 'in.lbf': result = nm / 0.112985; break;
+            }
+            
+            document.getElementById('torque-result').textContent = 
+                result.toFixed(4) + ' ' + toUnit;
+        }
+
+        // 粘度换算函数
+        function convertViscosity() {
+            const value = parseFloat(document.getElementById('viscosity').value);
+            const fromUnit = document.getElementById('viscosity-from').value;
+            const toUnit = document.getElementById('viscosity-to').value;
+            
+            // 转换为Pa⋅s作为中间单位（动力粘度）
+            let pas = value;
+            switch(fromUnit) {
+                case 'mPa.s': pas = value / 1000; break;
+                case 'cP': pas = value / 1000; break; // 1 cP = 1 mPa⋅s
+                case 'P': pas = value / 10; break;
+                case 'cSt': pas = value * 0.000001; break; // 需要假设密度为1000 kg/m³
+                case 'm2/s': pas = value * 1; break; // 需要假设密度为1000 kg/m³
+            }
+            
+            // 从Pa⋅s转换为目标单位
+            let result;
+            switch(toUnit) {
+                case 'Pa.s': result = pas; break;
+                case 'mPa.s': result = pas * 1000; break;
+                case 'cP': result = pas * 1000; break;
+                case 'P': result = pas * 10; break;
+                case 'cSt': result = pas * 1000000; break; // 假设密度为1000 kg/m³
+                case 'm2/s': result = pas * 1; break; // 假设密度为1000 kg/m³
+            }
+            
+            document.getElementById('viscosity-result').textContent = 
+                result.toFixed(4) + ' ' + toUnit;
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API连接测试</title>
+</head>
+<body>
+    <h2>API连接测试</h2>
+    <div id="result"></div>
+
+    <script type="module">
+        import API_CONFIG from './config/api-keys.js';
+
+        async function testOpenAIConnection() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>正在测试连接...</p>';
+            
+            try {
+                console.log('正在发送请求到:', API_CONFIG.OPENAI.API_ENDPOINT.trim());
+                console.log('使用的API密钥:', API_CONFIG.OPENAI.API_KEY);
+                
+                const response = await fetch(API_CONFIG.OPENAI.API_ENDPOINT.trim(), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_CONFIG.OPENAI.API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: API_CONFIG.OPENAI.MODELS.GPT35,
+                        messages: [{
+                            role: "user",
+                            content: "测试API连接"
+                        }],
+                        temperature: 0.7
+                    })
+                });
+
+                console.log('收到响应:', response.status);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <p style="color: green;">✓ API连接成功！</p>
+                        <p>状态码: ${response.status}</p>
+                        <pre style="background: #f5f5f5; padding: 10px; overflow: auto;">
+                            ${JSON.stringify(data, null, 2)}
+                        </pre>
+                    `;
+                } else {
+                    throw new Error(`API返回错误: ${data.error?.message || JSON.stringify(data)}`);
+                }
+            } catch (error) {
+                console.error('测试失败:', error);
+                resultDiv.innerHTML = `
+                    <p style="color: red;">✗ API连接测试失败:</p>
+                    <pre style="background: #ffe6e6; padding: 10px;">
+                        ${error.message}
+                    </pre>
+                    <p>请检查:</p>
+                    <ul>
+                        <li>API密钥是否正确</li>
+                        <li>API端点是否可访问</li>
+                        <li>网络连接是否正常</li>
+                    </ul>
+                `;
+            }
+        }
+
+        // 执行测试
+        testOpenAIConnection();
+    </script>
+</body>
+</html> 
