@@ -1,4 +1,4 @@
 # 当前使用的配置
 API KEY "sk-7IkD2fNuRQcqj8UGGMZ7cW7NJC4nZsD0a2OqzxM0JwHwPH10"
 路径 "https://api.ssopen.top/v1/chat/completions"
-模型"deepseek-v3l"
+模型"deepseek-v3"
