@@ -3,8 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>管道损失计算</title>
+    <title>管道损失计算 - 离心泵工程师工具箱</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .result-section {
+            display: flex;
+            justify-content: space-between; /* 水平排列 */
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .result-item {
+            flex: 1; /* 每个结果项占据相同的空间 */
+            margin: 0 10px; /* 添加间距 */
+            text-align: center; /* 居中对齐 */
+        }
+
+        .result-item h3 {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .result-item p {
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
     <!-- 侧边栏 -->
@@ -120,14 +146,22 @@
                 </div>
 
                 <div class="results-section">
-                    <div class="results">
-                        <h3>计算结果</h3>
-                        <div class="result-item" id="velocity-result">流速: </div>
-                        <div class="result-item" id="reynolds-result">雷诺数: </div>
-                        <div class="result-item" id="friction-loss">摩擦损失: </div>
-                        <div class="result-item" id="local-loss">局部损失: </div>
-                        <div class="result-item" id="total-loss">总损失: </div>
+                    <div class="result-section" id="results">
+                        <div class="result-item">
+                            <h3>总损失</h3>
+                            <p id="total-loss">0</p>
+                        </div>
+                        <div class="result-item">
+                            <h3>摩擦损失</h3>
+                            <p id="friction-loss">0</p>
+                        </div>
+                        <div class="result-item">
+                            <h3>局部损失</h3>
+                            <p id="local-loss">0</p>
+                        </div>
+                    </div>
 
+                    <div class="results">
                         <h3>计算说明</h3>
                         <div class="result-item">
                             <strong>计算公式:</strong>
@@ -235,11 +269,9 @@
             const hl = totalLocalCoeff * Math.pow(v,2) / (2 * 9.81);
 
             // 更新结果显示
-            document.getElementById('velocity-result').textContent = `流速: ${(v).toFixed(2)} m/s`;
-            document.getElementById('reynolds-result').textContent = `雷诺数: ${Re.toFixed(0)}`;
-            document.getElementById('friction-loss').textContent = `摩擦损失: ${hf.toFixed(2)} mH₂O`;
-            document.getElementById('local-loss').textContent = `局部损失: ${hl.toFixed(2)} mH₂O`;
-            document.getElementById('total-loss').textContent = `总损失: ${(hf + hl).toFixed(2)} mH₂O`;
+            document.getElementById('total-loss').textContent = (hf + hl).toFixed(2) + ' mH₂O';
+            document.getElementById('friction-loss').textContent = hf.toFixed(2) + ' mH₂O';
+            document.getElementById('local-loss').textContent = hl.toFixed(2) + ' mH₂O';
         }
 
         document.getElementById('roughness').addEventListener('change', function() {
