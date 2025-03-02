@@ -5,6 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>优化计算 - 离心泵工程师工具箱</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .result-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .result-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+
+        .result-group {
+            flex: 1;
+            min-width: 200px;
+            margin: 10px;
+            padding: 15px;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .result-item {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .result-value {
+            color: #ff0000;
+            font-weight: bold;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 5px;
+        }
+
+        .form-group label {
+            flex: 0 0 150px; /* 固定标签宽度 */
+            margin-right: 15px;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            flex: 0 0 200px; /* 固定输入框宽度 */
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .calc-form {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .calc-button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .calc-button:hover {
+            background: #45a049;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -81,6 +162,93 @@
         </div>
     </div>
 
-    <script src="scripts.js"></script>
+    <script>
+        function calculate() {
+            try {
+                // 获取输入值
+                const values = {
+                    Q: parseFloat(document.getElementById('flow').value),
+                    H: parseFloat(document.getElementById('head').value),
+                    N: parseFloat(document.getElementById('speed').value),
+                    STAGE: parseFloat(document.getElementById('stages').value),
+                    DENSITY: parseFloat(document.getElementById('density').value),
+                    ROUGH: parseFloat(document.getElementById('roughness').value),
+                    SUCTION: parseFloat(document.getElementById('suctionType').value),
+                    POWF: parseFloat(document.getElementById('safetyFactor').value)
+                };
+
+                // 计算基本常数
+                const PI = Math.PI;
+                const qqq = values.Q / values.SUCTION / 3600;
+                const rads = values.N * 2 * PI / 60;
+                const X = Math.pow(3.5 / values.ROUGH, 2);
+
+                // 计算当前级数的效率和Ns
+                function calculateEff(stage) {
+                    const hhh = values.H / stage;
+                    const OS = Math.pow(qqq, 0.5) * rads / Math.pow(9.81 * hhh, 0.75);
+                    const eff2 = 0.011378 * Math.pow(qqq / values.N * X, -0.21333);
+                    const eff3 = 0.29 * Math.pow(Math.log10(0.8364 / OS), 2);
+                    return Math.max(0, 0.94 - eff2 - eff3);
+                }
+
+                function calculateNs(stage) {
+                    const hhh = values.H / stage;
+                    return values.N * Math.pow(qqq, 0.5) / Math.pow(hhh, 0.75);
+                }
+
+                // 计算当前配置
+                const eff_given = calculateEff(values.STAGE);
+                const ns_given = calculateNs(values.STAGE);
+                const HW = values.Q * values.H / 360 * values.DENSITY;
+                const HWF = HW / eff_given * values.POWF;
+
+                // 寻找最佳级数
+                let best_stage = values.STAGE;
+                let best_eff = eff_given;
+                
+                for (let stage = 0.1; stage <= 100.0; stage += 0.1) {
+                    const eff = calculateEff(stage);
+                    if (eff > best_eff) {
+                        best_eff = eff;
+                        best_stage = stage;
+                    }
+                }
+
+                const ns_best = calculateNs(best_stage);
+
+                // 更新结果显示
+                const resultHTML = `
+                    <div class="result-content">
+                        <div class="result-group">
+                            <h4>当前配置</h4>
+                            <div class="result-item">HYD POWER: ${HW.toFixed(2)}</div>
+                            <div class="result-item">POWER: ${HWF.toFixed(2)}</div>
+                            <div class="result-item">EFF: <span class="result-value">${(eff_given * 100).toFixed(2)}%</span></div>
+                            <div class="result-item">Ns: <span class="result-value">${ns_given.toFixed(4)}</span></div>
+                        </div>
+                        <div class="result-group">
+                            <h4>最优参考</h4>
+                            <div class="result-item">Optimal STAGE: ${best_stage.toFixed(2)}</div>
+                            <div class="result-item">Ns: ${ns_best.toFixed(4)}</div>
+                            <div class="result-item">Maximum EFF: <span class="result-value">${(best_eff * 100).toFixed(2)}%</span></div>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('result-content').innerHTML = resultHTML;
+            } catch (error) {
+                console.error('计算错误:', error);
+                document.getElementById('result-content').innerHTML = `
+                    <div class="error-message">
+                        计算出错，请检查输入值是否正确。
+                    </div>
+                `;
+            }
+        }
+
+        // 页面加载完成后自动计算一次
+        window.addEventListener('load', calculate);
+    </script>
 </body>
 </html> 
